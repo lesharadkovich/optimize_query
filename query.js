@@ -1,3 +1,7 @@
+// db.opportunities.createIndex( { "initiativeId":1,"contacts.questions.category_id": 1 } );
+// db.clientCriteria.createIndex({"value": 1})
+// db.opportunities.getPlanCache().clear()
+
 db.getCollection('opportunities').aggregate([
     {
         "$match" : {
@@ -15,6 +19,28 @@ db.getCollection('opportunities').aggregate([
                     }
                 }
             }
+        }
+    },
+    { 
+        "$project": {
+            "contacts.id":1,
+            "contacts.datePublished": 1,
+            "contacts.shortListedVendors":1,
+            "contacts.vendors":1,
+            
+             "contacts.questions.criteria_value":1,
+             "criteria_value" : {
+                    "$ifNull" : [ 
+                        "$contacts.questions.criteria_value", 
+                        "$contacts.questions.answers.criteria_value"
+                    ]
+                },
+                "contacts.questions.label" : 1,
+                "contacts.questions.raw_text" : 1,
+                "contacts.questions.id" : 1,
+                "contacts.questions.answers" : 1,
+                "contacts.questions.category_id" : 1,
+                "contacts.win_vendor" : 1           
         }
     },
     {
@@ -208,12 +234,14 @@ db.getCollection('opportunities').aggregate([
             "as" : "criteria"
         }
     },
+    
     {
         "$unwind" : "$criteria"
     },
     {
         "$unwind" : "$criteria.versions"
     },
+    
     {
         "$match" : {
             "criteria.versions.initiativeId" : ObjectId("58af4da0b310d92314627290")
@@ -251,4 +279,4 @@ db.getCollection('opportunities').aggregate([
             }
         }
     }
-])
+]).toArray()
