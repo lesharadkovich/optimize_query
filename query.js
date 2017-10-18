@@ -226,26 +226,27 @@ db.getCollection('opportunities').aggregate([
             ]
         }
     },
+    
     {
         "$lookup" : {
             "from" : "clientCriteria",
-            "localField" : "criteria_value",
-            "foreignField" : "value",
+            let: { "cv": "$criteria_value"},
+            pipeline: [
+                {
+                    $match : { "versions.initiativeId" : ObjectId("58af4da0b310d92314627290") }
+                },
+                { 
+                    $match: { $expr: { $eq: [ "$value",  "$$cv" ] } } 
+                }
+            ],
             "as" : "criteria"
         }
     },
-    
     {
         "$unwind" : "$criteria"
     },
     {
         "$unwind" : "$criteria.versions"
-    },
-    
-    {
-        "$match" : {
-            "criteria.versions.initiativeId" : ObjectId("58af4da0b310d92314627290")
-        }
     },
     {
         "$group" : {
