@@ -1,11 +1,11 @@
-// db.opportunities.createIndex( { "initiativeId":1,"contacts.questions.category_id": 1 } );
-// db.clientCriteria.createIndex({"versions.initiativeId": 1, "value": 1})
-// db.opportunities.getPlanCache().clear()
+var ObjectID = require('mongodb').ObjectID;
 
-db.getCollection('opportunities').aggregate([
+var initiativeId = new ObjectID("58af4da0b310d92314627290");
+
+module.exports = [
     {
         "$match" : {
-            "initiativeId" : ObjectId("58af4da0b310d92314627290"),
+            "initiativeId" : initiativeId,
             "contacts.questions.category_id" : {
                 "$in" : [ 
                     105, 
@@ -244,7 +244,7 @@ db.getCollection('opportunities').aggregate([
             let: { "cv": "$criteria_value"},
             pipeline: [
                 {
-                    $match : { "versions.initiativeId" : ObjectId("58af4da0b310d92314627290") }
+                    $match : { "versions.initiativeId" : initiativeId }
                 },
                 { 
                     $match: { $expr: { $eq: [ "$value",  "$$cv" ] } } 
@@ -285,4 +285,4 @@ db.getCollection('opportunities').aggregate([
             }
         }
     }
-]).toArray()
+];
