@@ -1,22 +1,20 @@
-var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 
-var pipeline = require('./pipeline.js');
 var result = require('./result.js');
+var getResult = require('./getResult.js');
 
 describe('test query', function () {
-    it('should return array of 15 elements', function () {
-        var url = 'mongodb://localhost:27017/truvoice_test';
+    after(function () {
+        // runs after all tests in this block
+    });
 
-        MongoClient.connect(url, function (err, db) {
-            var collection = db.collection('opportunities');
+    it('should return array of 15 elements', async function () {
+        let doc = await getResult;
 
-            collection.aggregate(pipeline).toArray(function (err, docs) {
+        result = JSON.parse(JSON.stringify(result));
+        getResult = JSON.parse(JSON.stringify(doc));
 
-                assert.equal(docs, result);
-                db.close();
-            });
 
-        });
+        assert.deepEqual(getResult, result);
     });
 });
